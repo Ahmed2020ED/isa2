@@ -42,6 +42,8 @@ html,body{font-family:'Cairo',sans-serif;background:#f6f1e7;color:#1a2744;min-he
 .abtn{padding:5px 12px;border-radius:4px;font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer;border:none;transition:all .2s;white-space:nowrap;}
 .bw{background:#fff;color:#b8860b;}.bw:hover{background:#b8860b;color:#fff;}
 .bd{background:#c0392b;color:#fff;}.bd:hover{background:#922b21;}
+.action-btn{background:rgba(255,255,255,.13);color:#fff;border:1.5px solid rgba(255,255,255,.35);font-size:11px;min-width:100px;justify-content:center;}
+.action-btn:hover{background:rgba(212,165,32,.45);border-color:#d4a520;color:#ffd54f;}
 .badge{background:rgba(255,255,255,.2);color:#fff;padding:3px 8px;border-radius:20px;font-size:11px;white-space:nowrap;}
 /* CUSTOM DROPDOWN */
 .fdrop-wrap{position:relative;min-width:200px;max-width:280px;}
@@ -198,6 +200,13 @@ footer{
     <span class="logo-icon">&#x1F4CA;</span>
     <div class="logo-txt">Tableaux de Bord <span style="background:rgba(212,165,32,.2);color:#d4a520;border:1px solid rgba(212,165,32,.4);font-size:10px;padding:1px 8px;border-radius:10px;font-weight:900;">V2</span><small>&#x644;&#x648;&#x62D;&#x629; &#x627;&#x644;&#x642;&#x64A;&#x627;&#x62F;&#x629;</small></div>
   </div>
+  <div style="margin-right:auto;"></div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <button onclick="saveAppToDevice()" title="حفظ التطبيق على الجهاز" style="padding:5px 14px;border-radius:6px;border:none;background:rgba(212,165,32,.25);color:#ffd54f;font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background .2s;border:1px solid rgba(212,165,32,.5);" onmouseover="this.style.background='rgba(212,165,32,.45)'" onmouseout="this.style.background='rgba(212,165,32,.25)'">&#x1F4E5; حفظ التطبيق</button>
+    <button onclick="saveSession()" title="تخزين البيانات داخل المتصفح" style="padding:5px 14px;border-radius:6px;border:none;background:rgba(255,255,255,.15);color:#fff;font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.3)'" onmouseout="this.style.background='rgba(255,255,255,.15)'">&#x1F4BE; تخزين البيانات</button>
+    <button onclick="clearSession()" title="مسح البيانات المحفوظة" style="padding:5px 14px;border-radius:6px;border:1px solid rgba(255,255,255,.3);background:rgba(183,28,28,.4);color:#fff;font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background .2s;" onmouseover="this.style.background='rgba(183,28,28,.7)'" onmouseout="this.style.background='rgba(183,28,28,.4)'">&#x1F5D1; مسح البيانات</button>
+    <span id="saveMsg" style="font-size:10px;color:#fff;background:rgba(0,0,0,.25);padding:3px 10px;border-radius:10px;display:none;"></span>
+  </div>
 </div>
 
 <div class="fbar">
@@ -214,10 +223,10 @@ footer{
     <button class="abtn bd hn" id="removeBtn" onclick="removeFile()">&#x1F5D1; Supprimer</button>
     <span class="badge" id="fcnt">0 fichier(s)</span>
     <button class="abtn hn" id="removeAllBtn" onclick="removeAllFiles()" style="background:#7b1fa2;color:#fff;font-size:11px;">&#x1F5D1; Supprimer tous</button>
-    <button class="abtn hn" id="printOneBtn" onclick="openPrintOne(false)" style="background:#e8f5e9;color:#2e7d32;border:2px solid #a5d6a7;font-size:12px;">&#x1F4C4; طباعة القسم</button>
-    <button class="abtn hn" id="pdfOneBtn" onclick="openPrintOne(true)" style="background:#1565c0;color:#fff;font-size:12px;">&#x2B07; PDF القسم</button>
-    <button class="abtn hn" id="printBtn" onclick="openPrintReport(false)" style="background:#fffdf4;color:#b8860b;border:2px solid #d4b96a;font-size:12px;">&#x1F4C4; طباعة الكل</button>
-    <button class="abtn hn" id="pdfBtn" onclick="openPrintReport(true)" style="background:#c0392b;color:#fff;font-size:12px;">&#x2B07; PDF الكل</button>
+    <button class="abtn hn action-btn" id="printOneBtn" onclick="openPrintOne(false)">&#x1F4C4; طباعة القسم</button>
+    <button class="abtn hn action-btn" id="pdfOneBtn" onclick="openPrintOne(true)">&#x2B07; PDF القسم</button>
+    <button class="abtn hn action-btn" id="printBtn" onclick="openPrintReport(false)">&#x1F4C4; طباعة الكل</button>
+    <button class="abtn hn action-btn" id="pdfBtn" onclick="openPrintReport(true)">&#x2B07; PDF الكل</button>
   </div>
   <div class="frow hn" id="metaRow"></div>
 </div>
@@ -326,6 +335,7 @@ function loadF(file){
     document.getElementById('printOneBtn').classList.remove('hn');
     document.getElementById('pdfBtn').classList.remove('hn');
     document.getElementById('pdfOneBtn').classList.remove('hn');
+    autoSave();
   };
   r.readAsArrayBuffer(file);
 }
@@ -428,6 +438,7 @@ function removeAllFiles(){
     document.getElementById(id).classList.add('hn');
   });
   document.getElementById('metaRow').classList.add('hn');
+  try{localStorage.removeItem(SK);}catch(e){}
   // Destroy charts
   if(ch.main){ch.main.destroy();delete ch.main;}
   if(ch.top){ch.top.destroy();delete ch.top;}
@@ -1471,6 +1482,125 @@ function openPrintReport(asPDF){
     w.document.close();
   }
 }
+
+
+// ════════════════════════════════════════════
+// SAVE / RESTORE / CLEAR — localStorage
+// ════════════════════════════════════════════
+var SK='lqiada_v2';
+
+function showMsg(txt,ok){
+  var el=document.getElementById('saveMsg');
+  el.textContent=txt;
+  el.style.background=ok?'rgba(0,137,123,.8)':'rgba(183,28,28,.8)';
+  el.style.display='';
+  clearTimeout(el._t);
+  el._t=setTimeout(function(){el.style.display='none';},3000);
+}
+
+// Auto-save after each file load
+function autoSave(){
+  try{
+    var data={};
+    Object.keys(fs).forEach(function(k){
+      data[k]=XLSX.write(fs[k],{bookType:'xlsx',type:'base64'});
+    });
+    var payload=JSON.stringify({v:2,d:new Date().toISOString(),files:data,meta:fsMeta,cur:cn});
+    if(payload.length>10485760){ showMsg('> 10MB \u2014 \u0644\u0627 \u064a\u0645\u0643\u0646 \u0627\u0644\u062d\u0641\u0638',false); return; }
+    localStorage.setItem(SK,payload);
+  }catch(e){}
+}
+
+// Manual save button
+function saveSession(){
+  try{
+    var data={};
+    Object.keys(fs).forEach(function(k){
+      data[k]=XLSX.write(fs[k],{bookType:'xlsx',type:'base64'});
+    });
+    var payload=JSON.stringify({v:2,d:new Date().toISOString(),files:data,meta:fsMeta,cur:cn});
+    var mb=(payload.length/1048576).toFixed(2);
+    if(payload.length>10485760){ showMsg('> 10MB \u2014 \u063a\u064a\u0631 \u0645\u0645\u0643\u0646',false); return; }
+    localStorage.setItem(SK,payload);
+    showMsg('\u2713 \u062a\u0645 \u0627\u0644\u062d\u0641\u0638 ('+mb+' MB)',true);
+  }catch(e){ showMsg('\u062e\u0637\u0623: '+e.message,false); }
+}
+
+// Clear saved data
+function clearSession(){
+  if(!localStorage.getItem(SK)){ showMsg('\u0644\u0627 \u062a\u0648\u062c\u062f \u0628\u064a\u0627\u0646\u0627\u062a \u0645\u062d\u0641\u0648\u0638\u0629',false); return; }
+  if(!confirm('\u0645\u0633\u062d \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0645\u062d\u0641\u0648\u0638\u0629 \u0645\u0646 \u0627\u0644\u0645\u062a\u0635\u0641\u062d\u061f')) return;
+  localStorage.removeItem(SK);
+  showMsg('\u2713 \u062a\u0645 \u0627\u0644\u0645\u0633\u062d',true);
+}
+
+// Save app HTML file to device with folder picker
+async function saveAppToDevice(){
+  var html = document.documentElement.outerHTML;
+  var fileName = '\u062a\u0637\u0628\u064a\u0642 \u062a\u062d\u0644\u064a\u0644 \u0627\u0644\u0646\u062a\u0627\u0626\u062c.html';
+  // Try File System Access API (Chrome/Edge — lets user pick folder)
+  if(window.showSaveFilePicker){
+    try{
+      var fh = await window.showSaveFilePicker({
+        suggestedName: fileName,
+        types:[{description:'HTML File',accept:{'text/html':['.html']}}]
+      });
+      var writable = await fh.createWritable();
+      await writable.write(new Blob([html],{type:'text/html;charset=utf-8'}));
+      await writable.close();
+      showMsg('\u2713 \u062a\u0645 \u062d\u0641\u0638 \u0627\u0644\u062a\u0637\u0628\u064a\u0642 \u0628\u0646\u062c\u0627\u062d',true);
+      return;
+    }catch(e){
+      if(e.name==='AbortError') return; // user cancelled
+      // fallthrough to legacy download
+    }
+  }
+  // Fallback: standard download (Firefox / Safari)
+  try{
+    var blob = new Blob([html],{type:'text/html;charset=utf-8'});
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href   = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){URL.revokeObjectURL(url);},1000);
+    showMsg('\u2713 \u062a\u0645 \u062d\u0641\u0638 \u0627\u0644\u062a\u0637\u0628\u064a\u0642 (\u062a\u062d\u0642\u0642 \u0645\u062c\u0644\u062f \u0627\u0644\u062a\u0646\u0632\u064a\u0644\u0627\u062a)',true);
+  }catch(e){
+    showMsg('\u062e\u0637\u0623: '+e.message,false);
+  }
+}
+
+// Auto-restore on page open
+window.addEventListener('DOMContentLoaded',function(){
+  try{
+    var raw=localStorage.getItem(SK);
+    if(!raw) return;
+    var session=JSON.parse(raw);
+    var files=session.files||{};
+    var keys=Object.keys(files);
+    if(!keys.length) return;
+    var loaded=0;
+    keys.forEach(function(k){
+      try{
+        var wb=XLSX.read(files[k],{type:'base64'});
+        fs[k]=wb;
+        if(session.meta&&session.meta[k]) fsMeta[k]=session.meta[k];
+        loaded++;
+      }catch(e){}
+    });
+    if(!loaded) return;
+    refSel();
+    var cur=session.cur&&fs[session.cur]?session.cur:Object.keys(fs)[0];
+    switchFile(cur);
+    document.getElementById('upSec').classList.add('hn');
+    document.getElementById('dash').classList.remove('hn');
+    ['removeBtn','removeAllBtn','printBtn','printOneBtn','pdfBtn','pdfOneBtn'].forEach(function(id){
+      document.getElementById(id).classList.remove('hn');
+    });
+  }catch(e){}
+});
 
 </script>
 </body>
