@@ -33,8 +33,9 @@ html,body{font-family:'Cairo',sans-serif;background:#f6f1e7;color:#1a2744;min-he
   padding:8px 14px 6px;border-bottom:2px solid #0d2240;
   display:flex;flex-direction:column;gap:6px;align-items:center;
   box-shadow:0 2px 8px rgba(13,34,64,.2);
+  overflow:visible;
 }
-.frow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;width:100%;}
+.frow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;width:100%;overflow:visible;}
 .flbl{color:#fff;font-size:11px;font-weight:700;white-space:nowrap;}
 .fsel{padding:4px 6px;border-radius:4px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.93);color:#1a1a1a;font-family:'Cairo',sans-serif;font-size:11px;cursor:pointer;outline:none;min-width:100px;max-width:180px;}
 .mchip{display:inline-flex;align-items:center;gap:3px;background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;white-space:nowrap;}
@@ -42,8 +43,19 @@ html,body{font-family:'Cairo',sans-serif;background:#f6f1e7;color:#1a2744;min-he
 .abtn{padding:5px 12px;border-radius:4px;font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer;border:none;transition:all .2s;white-space:nowrap;}
 .bw{background:#fff;color:#b8860b;}.bw:hover{background:#b8860b;color:#fff;}
 .bd{background:#c0392b;color:#fff;}.bd:hover{background:#922b21;}
+.abtn-del{background:#c0392b;color:#fff;border:1.5px solid #922b21;}
+.abtn-del:hover{background:#922b21;}
+.abtn-exp{background:#1a6e3c;color:#fff;border:1.5px solid #145530;}
+.abtn-exp:hover{background:#145530;}
 .action-btn{background:rgba(255,255,255,.13);color:#fff;border:1.5px solid rgba(255,255,255,.35);font-size:11px;min-width:100px;justify-content:center;}
 .action-btn:hover{background:rgba(212,165,32,.45);border-color:#d4a520;color:#ffd54f;}
+/* ACTION DROPDOWNS */
+.ddrop-wrap{position:relative;}
+/* action dropdowns always visible when present in DOM */
+.ddrop-menu{position:absolute;top:calc(100% + 4px);left:0;background:#0d2240;border:1.5px solid #b8860b;border-radius:8px;min-width:170px;z-index:500;box-shadow:0 6px 20px rgba(0,0,0,.35);overflow:hidden;}
+.ddrop-item{padding:10px 14px;color:#fff;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s;display:block;}
+.ddrop-item:hover{background:rgba(212,165,32,.3);color:#ffd54f;}
+.ddrop-sep{border-top:1px solid rgba(255,255,255,.12);}
 .badge{background:rgba(255,255,255,.2);color:#fff;padding:3px 8px;border-radius:20px;font-size:11px;white-space:nowrap;}
 /* CUSTOM DROPDOWN */
 .fdrop-wrap{position:relative;min-width:200px;max-width:280px;}
@@ -201,13 +213,24 @@ footer{
     <div class="logo-txt">Tableaux de Bord <span style="background:rgba(212,165,32,.2);color:#d4a520;border:1px solid rgba(212,165,32,.4);font-size:10px;padding:1px 8px;border-radius:10px;font-weight:900;">V2</span><small>&#x644;&#x648;&#x62D;&#x629; &#x627;&#x644;&#x642;&#x64A;&#x627;&#x62F;&#x629;</small></div>
   </div>
   <div style="margin-right:auto;"></div>
-  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-    <button onclick="saveAppToDevice()" title="حفظ التطبيق على الجهاز" style="padding:5px 14px;border-radius:6px;border:none;background:rgba(212,165,32,.25);color:#ffd54f;font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background .2s;border:1px solid rgba(212,165,32,.5);" onmouseover="this.style.background='rgba(212,165,32,.45)'" onmouseout="this.style.background='rgba(212,165,32,.25)'">&#x1F4E5; حفظ التطبيق</button>
-    <button onclick="saveSession()" title="تخزين البيانات داخل المتصفح" style="padding:5px 14px;border-radius:6px;border:none;background:rgba(255,255,255,.15);color:#fff;font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.3)'" onmouseout="this.style.background='rgba(255,255,255,.15)'">&#x1F4BE; تخزين البيانات</button>
-    <button onclick="clearSession()" title="مسح البيانات المحفوظة" style="padding:5px 14px;border-radius:6px;border:1px solid rgba(255,255,255,.3);background:rgba(183,28,28,.4);color:#fff;font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background .2s;" onmouseover="this.style.background='rgba(183,28,28,.7)'" onmouseout="this.style.background='rgba(183,28,28,.4)'">&#x1F5D1; مسح البيانات</button>
-    <span id="saveMsg" style="font-size:10px;color:#fff;background:rgba(0,0,0,.25);padding:3px 10px;border-radius:10px;display:none;"></span>
+  <button onclick="toggleSidePanel()" id="sidePanelToggle" title="الإعدادات" style="padding:6px 12px;border-radius:6px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;font-family:'Cairo',sans-serif;font-size:18px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;line-height:1;" onmouseover="this.style.background='rgba(212,165,32,.35)';this.style.borderColor='#d4a520'" onmouseout="this.style.background='rgba(255,255,255,.12)';this.style.borderColor='rgba(255,255,255,.3)'">&#x2699;&#xFE0F;</button>
+</div>
+
+<!-- SIDE PANEL -->
+<div id="sidePanel" style="position:fixed;top:0;right:-280px;width:260px;height:100vh;background:#0d2240;box-shadow:-4px 0 20px rgba(0,0,0,.4);z-index:9999;display:flex;flex-direction:column;transition:right .3s ease;border-left:3px solid #b8860b;">
+  <div style="background:#1e3859;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #b8860b;">
+    <span style="color:#d4a520;font-size:13px;font-weight:900;font-family:'Cairo',sans-serif;">&#x2699;&#xFE0F; الإعدادات</span>
+    <button onclick="toggleSidePanel()" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:2px 6px;border-radius:4px;line-height:1;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='none'">&#x2715;</button>
+  </div>
+  <div style="padding:18px 14px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;overflow-x:hidden;height:calc(100vh - 52px);">
+    <button onclick="saveAppToDevice()" style="width:100%;padding:11px 14px;border-radius:8px;border:1.5px solid rgba(212,165,32,.5);background:rgba(212,165,32,.18);color:#ffd54f;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .2s;text-align:right;" onmouseover="this.style.background='rgba(212,165,32,.38)'" onmouseout="this.style.background='rgba(212,165,32,.18)'"><span style="font-size:18px;">&#x1F4E5;</span><span>حفظ التطبيق على الجهاز</span></button>
+    <button onclick="saveSession()" style="width:100%;padding:11px 14px;border-radius:8px;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .2s;text-align:right;" onmouseover="this.style.background='rgba(255,255,255,.2)'" onmouseout="this.style.background='rgba(255,255,255,.1)'"><span style="font-size:18px;">&#x1F4BE;</span><span>تخزين البيانات في المتصفح</span></button>
+    <button onclick="clearSession()" style="width:100%;padding:11px 14px;border-radius:8px;border:1.5px solid rgba(192,57,43,.5);background:rgba(192,57,43,.2);color:#ff8a80;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .2s;text-align:right;" onmouseover="this.style.background='rgba(192,57,43,.4)'" onmouseout="this.style.background='rgba(192,57,43,.2)'"><span style="font-size:18px;">&#x1F5D1;</span><span>مسح البيانات المحفوظة</span></button>
+    <div style="height:1px;background:rgba(255,255,255,.1);margin:4px 0;"></div>
+    <span id="saveMsg" style="font-size:11px;color:#fff;background:rgba(0,0,0,.3);padding:6px 12px;border-radius:8px;display:none;text-align:center;font-family:'Cairo',sans-serif;"></span>
   </div>
 </div>
+<div id="sidePanelOverlay" onclick="toggleSidePanel()" style="position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:9998;display:none;backdrop-filter:blur(1px);"></div>
 
 <div class="fbar">
   <div class="frow">
@@ -220,15 +243,18 @@ footer{
       <div class="fdrop-list hn" id="fdropList"></div>
     </div>
     <label for="fi" class="abtn bw" style="cursor:pointer;">&#x2795; Ajouter</label>
-    <button class="abtn bd hn" id="removeBtn" onclick="removeFile()">&#x1F5D1; Supprimer</button>
     <span class="badge" id="fcnt">0 fichier(s)</span>
-    <button class="abtn hn" id="removeAllBtn" onclick="removeAllFiles()" style="background:#7b1fa2;color:#fff;font-size:11px;">&#x1F5D1; Supprimer tous</button>
-    <button class="abtn hn action-btn" id="printOneBtn" onclick="openPrintOne(false)">&#x1F4C4; طباعة القسم</button>
-    <button class="abtn hn action-btn" id="pdfOneBtn" onclick="openPrintOne(true)">&#x2B07; PDF القسم</button>
-    <button class="abtn hn action-btn" id="printBtn" onclick="openPrintReport(false)">&#x1F4C4; طباعة الكل</button>
-    <button class="abtn hn action-btn" id="pdfBtn" onclick="openPrintReport(true)">&#x2B07; PDF الكل</button>
   </div>
   <div class="frow hn" id="metaRow"></div>
+  <!-- ACTION ROW: always below metaRow -->
+  <div class="frow hn" id="actionRow">
+    <button id="removeBtn"    class="abtn abtn-del" onclick="removeFile()">&#x1F5D1; حذف القسم</button>
+    <button id="removeAllBtn" class="abtn abtn-del" onclick="removeAllFiles()">&#x1F5D1; حذف الكل</button>
+    <button id="printOneBtn"  class="abtn abtn-exp" onclick="openPrintOne(false)">&#x1F4C4; طباعة القسم</button>
+    <button id="pdfOneBtn"    class="abtn abtn-exp" onclick="openPrintOne(true)">&#x2B07; PDF القسم</button>
+    <button id="printBtn"     class="abtn abtn-exp" onclick="openPrintReport(false)">&#x1F4C4; طباعة الكل</button>
+    <button id="pdfBtn"       class="abtn abtn-exp" onclick="openPrintReport(true)">&#x2B07; PDF الكل</button>
+  </div>
 </div>
 
 <input type="file" id="fi" accept=".xlsx,.xls,.csv" multiple style="display:none;">
@@ -329,12 +355,7 @@ function loadF(file){
     switchFile(file.name);
     document.getElementById('upSec').classList.add('hn');
     document.getElementById('dash').classList.remove('hn');
-    document.getElementById('removeBtn').classList.remove('hn');
-    document.getElementById('removeAllBtn').classList.remove('hn');
-    document.getElementById('printBtn').classList.remove('hn');
-    document.getElementById('printOneBtn').classList.remove('hn');
-    document.getElementById('pdfBtn').classList.remove('hn');
-    document.getElementById('pdfOneBtn').classList.remove('hn');
+    showActionBtns(true);
     autoSave();
   };
   r.readAsArrayBuffer(file);
@@ -434,9 +455,7 @@ function removeAllFiles(){
   document.getElementById('fcnt').textContent='0 fichier(s)';
   document.getElementById('dash').classList.add('hn');
   document.getElementById('upSec').classList.remove('hn');
-  ['removeBtn','removeAllBtn','printBtn','printOneBtn','pdfBtn','pdfOneBtn'].forEach(function(id){
-    document.getElementById(id).classList.add('hn');
-  });
+  showActionBtns(false);
   document.getElementById('metaRow').classList.add('hn');
   try{localStorage.removeItem(SK);}catch(e){}
   // Destroy charts
@@ -454,7 +473,7 @@ function removeFile(){
     cn='';rd=[];fd=[];hd=[];sc=[];
     document.getElementById('dash').classList.add('hn');
     document.getElementById('upSec').classList.remove('hn');
-    document.getElementById('removeBtn').classList.add('hn');
+    showActionBtns(false);
     document.getElementById('metaRow').classList.add('hn');
   }
 }
@@ -504,13 +523,12 @@ function parseS(aoa){
 }
 
 function buildMeta(){
+  applyDefaultMeta();
   var mr=document.getElementById('metaRow');
   var chips=[];
   MK.forEach(function(mk){
     if(!mi[mk.id])return;
-    var sp=(mk.id==='cl'||mk.id==='ma');
-    var st=sp?' style="background:#fffdf4;color:#c0392b;border-color:#c4a65a;font-weight:900;"':'';
-    chips.push('<div class="mchip"'+st+'><span class="mk">'+mk.l+' :</span> '+mi[mk.id]+'</div>');
+    chips.push(buildMetaChip(mk));
   });
   if(chips.length){mr.innerHTML=chips.join('');mr.classList.remove('hn');}
   else mr.classList.add('hn');
@@ -569,13 +587,36 @@ function buildCharts(){
   });
 
   var pA=tot>0?cA/tot:0,pB=tot>0?cB/tot:0,pC=tot>0?cC/tot:0;
-  var isa=(26.67*(3*pA+2*pB+pC)).toFixed(2);
-  var ic=isa>=80?'#4caf50':isa>=60?'#2196f3':isa>=40?'#ff9800':'#f44336';
-  var it=isa>=80?'\u0645\u0645\u062a\u0627\u0632':isa>=60?'\u062c\u064a\u062f':isa>=40?'\u0645\u062a\u0648\u0633\u0637':'\u0636\u0639\u064a\u0641';
-  document.getElementById('i2v').textContent=isa+'%';
-  document.getElementById('i2v').style.color=ic;
-  document.getElementById('i2l').textContent=it;
-  document.getElementById('i2l').style.color=ic;
+  var isaVal=parseFloat((26.67*(3*pA+2*pB+pC)).toFixed(2));
+  var ic=isaVal>=80?'#4caf50':isaVal>=60?'#2196f3':isaVal>=40?'#ff9800':'#f44336';
+  var it=isaVal>=80?'\u0645\u0645\u062a\u0627\u0632':isaVal>=60?'\u062c\u064a\u062f':isaVal>=40?'\u0645\u062a\u0648\u0633\u0637':'\u0636\u0639\u064a\u0641';
+  // Animated counter for ISA2
+  (function animateISA2(){
+    var el=document.getElementById('i2v');
+    var lbl=document.getElementById('i2l');
+    var start=20.99, end=isaVal;
+    var duration=1600, startTime=null;
+    function ease(t){ return t===1?1:1-Math.pow(2,-10*t); }
+    lbl.textContent=''; lbl.style.color=ic; lbl.style.opacity=0;
+    function step(ts){
+      if(!startTime) startTime=ts;
+      var raw=Math.min((ts-startTime)/duration,1);
+      var p=ease(raw);
+      var cur=start+(end-start)*p;
+      el.textContent=cur.toFixed(2)+'%';
+      el.style.color=ic;
+      if(raw>=0.85){
+        lbl.textContent=it;
+        lbl.style.opacity=Math.min((raw-0.85)/0.15,1);
+      }
+      if(raw<1){ requestAnimationFrame(step); }
+      else {
+        el.textContent=isaVal.toFixed(2)+'%';
+        lbl.textContent=it; lbl.style.opacity=1;
+      }
+    }
+    requestAnimationFrame(step);
+  })();
 
   var es=cols.map(function(name){
     var ns=fd.map(function(r){var v=parseFloat(r[name]);return(!isNaN(v)&&v>=0&&v<=10)?v:null;}).filter(function(v){return v!==null;});
@@ -1534,6 +1575,87 @@ function clearSession(){
   showMsg('\u2713 \u062a\u0645 \u0627\u0644\u0645\u0633\u062d',true);
 }
 
+// Default metadata (persisted in localStorage)
+var DM_KEY='defaultMeta_v1';
+var defMeta={};
+
+function saveDefaultMeta(){
+  ['an','ac','dr','et','pe','nv'].forEach(function(id){
+    var el=document.getElementById('def_'+id);
+    if(el) defMeta[id]=el.value.trim();
+  });
+  try{localStorage.setItem(DM_KEY,JSON.stringify(defMeta));}catch(e){}
+}
+
+function loadDefaultMeta(){
+  try{
+    var raw=localStorage.getItem(DM_KEY);
+    if(raw) defMeta=JSON.parse(raw);
+  }catch(e){}
+  ['an','ac','dr','et','pe','nv'].forEach(function(id){
+    var el=document.getElementById('def_'+id);
+    if(el&&defMeta[id]) el.value=defMeta[id];
+  });
+}
+
+function applyDefaultMeta(){
+  // Fill missing mi fields from defMeta
+  ['an','ac','dr','et','pe','nv'].forEach(function(id){
+    if(!mi[id]&&defMeta[id]) mi[id]=defMeta[id];
+  });
+}
+
+// buildMeta — now shows only VALUE (not label) for non-special chips
+function buildMetaChip(mk){
+  var sp=(mk.id==='cl'||mk.id==='ma');
+  var st=sp?' style="background:#fffdf4;color:#c0392b;border-color:#c4a65a;font-weight:900;"':'';
+  // Show label only for class/subject; show value only for others
+  var content=sp?('<span class="mk">'+mk.l+' :</span> '+mi[mk.id]):mi[mk.id];
+  return '<div class="mchip"'+st+'>'+content+'</div>';
+}
+
+// Central helper to show/hide action dropdowns
+function showActionBtns(show){
+  if(show) document.body.classList.add('files-loaded');
+  else     document.body.classList.remove('files-loaded');
+  var ar=document.getElementById('actionRow');
+  if(ar){ if(show) ar.classList.remove('hn'); else ar.classList.add('hn'); }
+}
+
+// Action dropdowns
+var _dropJustOpened=false;
+function closeDrops(){
+  document.getElementById('deleteMenu').classList.add('hn');
+  document.getElementById('exportMenu').classList.add('hn');
+}
+function toggleDeleteDrop(e){
+  e.stopPropagation();
+  var m=document.getElementById('deleteMenu');
+  var wasHidden=m.classList.contains('hn');
+  closeDrops();
+  if(wasHidden){ m.classList.remove('hn'); _dropJustOpened=true; }
+}
+function toggleExportDrop(e){
+  e.stopPropagation();
+  var m=document.getElementById('exportMenu');
+  var wasHidden=m.classList.contains('hn');
+  closeDrops();
+  if(wasHidden){ m.classList.remove('hn'); _dropJustOpened=true; }
+}
+document.addEventListener('click',function(){
+  if(_dropJustOpened){ _dropJustOpened=false; return; }
+  closeDrops();
+});
+
+// Side panel toggle
+function toggleSidePanel(){
+  var panel=document.getElementById('sidePanel');
+  var overlay=document.getElementById('sidePanelOverlay');
+  var isOpen=panel.style.right==='0px';
+  panel.style.right=isOpen?'-280px':'0px';
+  overlay.style.display=isOpen?'none':'block';
+}
+
 // Save app HTML file to device with folder picker
 async function saveAppToDevice(){
   var html = document.documentElement.outerHTML;
@@ -1574,6 +1696,7 @@ async function saveAppToDevice(){
 
 // Auto-restore on page open
 window.addEventListener('DOMContentLoaded',function(){
+  loadDefaultMeta();
   try{
     var raw=localStorage.getItem(SK);
     if(!raw) return;
@@ -1596,9 +1719,7 @@ window.addEventListener('DOMContentLoaded',function(){
     switchFile(cur);
     document.getElementById('upSec').classList.add('hn');
     document.getElementById('dash').classList.remove('hn');
-    ['removeBtn','removeAllBtn','printBtn','printOneBtn','pdfBtn','pdfOneBtn'].forEach(function(id){
-      document.getElementById(id).classList.remove('hn');
-    });
+    showActionBtns(true);
   }catch(e){}
 });
 
